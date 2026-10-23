@@ -95,16 +95,16 @@ export const login = async (req, res) => {
 
     res.cookie("access_token", access_token, {
       httpOnly: true,
-      secure: 'none',
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refresh_token", refresh_token, {
       httpOnly: true,
-      secure: 'none',
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -135,8 +135,8 @@ export const getme = async (req, res) => {
 
     const cookieOptions = {
       httpOnly: true,
-      secure: 'none',
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
     };
 
