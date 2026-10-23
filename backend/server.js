@@ -15,7 +15,7 @@ app.use(cookieParser())
 
 const allowedOrigin = [
     "http://localhost:5173",
-    "https://collab-sphere-fs-4qj1.vercel.app"
+    "https://fs-collab-sphere-mqut.vercel.app"
 ];
 
 app.use(cors({
