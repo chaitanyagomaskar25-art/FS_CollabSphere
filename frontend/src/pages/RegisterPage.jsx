@@ -48,7 +48,7 @@ const [formSuccess, setFormSuccess] = useState("");
   if (result.success) {
     setFormSuccess(
       result.message ||
-        "Registration successful! Please check your email to verify your account."
+        "Registration successful!"
     );
   } else {
     setFormError(result.error);

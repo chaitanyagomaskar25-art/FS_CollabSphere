@@ -17,10 +17,6 @@ import ProjectFilesPage from "./pages/ProjectFilesPage.jsx";
 import ProjectAnalyticsPage from "./pages/ProjectAnalyticsPage.jsx";
 import ProjectSharePage from "./pages/ProjectSharePage.jsx";
 import PublicProjectPage from "./pages/PublicProjectPage.jsx";
-import VerifyEmail from "./pages/VerifyEmail.jsx";
-import VerifyOtpPage from "./pages/VerifyOtpPage.jsx";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
-import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 
 export default function App() {
   return (
@@ -34,16 +30,8 @@ export default function App() {
                 {/* Public Unauthenticated Routes */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/verify-otp" element={<VerifyOtpPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
 
-                <Route
-                  path="/forgot-password"
-                  element={<ForgotPasswordPage />}
-                />
-
-                <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route
                   path="/public/:shareId"
                   element={<PublicProjectPage />}

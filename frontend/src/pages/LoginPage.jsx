@@ -29,49 +29,33 @@ export default function LoginPage() {
     },
   });
 
+  const navigate = useNavigate()
+
   const { login } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/dashboard";
 
-  const onSubmit = async (data) => {
-    setFormError("");
+  
+const onSubmit = async (data) => {
+  setFormError("");
 
-    try {
-      const result = await login({
-        email: data.email.trim(),
-        password: data.password,
-      });
+  const result = await login({
+    email: data.email.trim(),
+    password: data.password,
+  });
 
-      if (result.success && result.requiresOtp) {
-        navigate("/verify-otp", {
-          replace: true,
-          state: {
-            email: data.email.trim(),
-            from,
-          },
-        });
-      } else {
-        setFormError(result.error || "Unable to start login verification.");
-      }
-    } catch (error) {
-      setFormError("Something went wrong. Please try again.");
-    }
-  };
+  if (!result.success) {
+    setFormError(result.error);
+    return;
+  }
 
-  // Demo user autofill for quick reviewer testing
-  const handleAutofillDemo = () => {
-    setValue("email", "alice@collabsphere.dev", {
-      shouldValidate: true,
-    });
+  const destination =
+    location.state?.from?.pathname || "/dashboard";
 
-    setValue("password", "Password123!", {
-      shouldValidate: true,
-    });
+  navigate(destination, { replace: true });
+};
 
-    setFormError("");
-  };
+
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950">
@@ -170,12 +154,11 @@ export default function LoginPage() {
               </button>
             </div>
 <div className="flex justify-end">
-  <Link
-    to="/forgot-password"
+  <p
     className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
   >
     Forgot password?
-  </Link>
+  </p>
 </div>
             {errors.password && (
               <p className="mt-1 text-sm text-rose-600">
@@ -204,7 +187,6 @@ export default function LoginPage() {
         <div className="pt-2 text-center">
           <button
             type="button"
-            onClick={handleAutofillDemo}
             className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1.5"
           >
             <Sparkles className="w-3.5 h-3.5" />

@@ -1,15 +1,11 @@
 import axios from "axios";
 
-const apiBaseURL = (
-  import.meta.env.VITE_API_URL || "http://localhost:3000/api"
-).replace(/\/+$/, "");
 
 const api = axios.create({
   baseURL: "http://localhost:3000/api",
   withCredentials: true,
 });
 
-// Set JSON content type only for non-FormData requests.
 api.interceptors.request.use((config) => {
   if (config.data instanceof FormData) {
     delete config.headers["Content-Type"];

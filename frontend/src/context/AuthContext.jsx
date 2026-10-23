@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Check whether the user is authenticated
   const checkAuthStatus = useCallback(async () => {
     try {
       const res = await api.get("/auth/profile");
@@ -29,8 +28,7 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       setUser(null);
 
-      // A 401 is expected when the user is not logged in.
-      // Only log unexpected errors.
+      
       if (err.response?.status !== 401) {
         console.error(
           "Failed to check authentication:",
@@ -46,7 +44,6 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  // Register a new user
   const register = async ({ name, email, password, bio = "" }) => {
     setAuthError(null);
 
@@ -62,7 +59,7 @@ export const AuthProvider = ({ children }) => {
         success: true,
         message:
           res.data?.message ||
-          "Registration successful. Please verify your email.",
+          "Registration successful.",
       };
     } catch (err) {
       const message =
@@ -80,81 +77,49 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Log in and initiate OTP verification
-  const login = async ({ email, password }) => {
-    setAuthError(null);
 
-    try {
-      const res = await api.post("/auth/login", {
-        email: email.trim(),
-        password,
-      });
+const login = async ({ email, password }) => {
+  setAuthError(null);
 
-      return {
-        success: true,
-        requiresOtp: true,
-        message: res.data?.message || "Please verify your OTP.",
-      };
-    } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        "Login failed. Please check your credentials.";
+  try {
+    // Step 1: Authenticate the user
+    const res = await api.post("/auth/login", {
+      email: email.trim().toLowerCase(),
+      password,
+    });
 
-      setAuthError(message);
+    // Step 2: Load the authenticated user's profile
+    const profileRes = await api.get("/auth/profile");
 
-      return {
-        success: false,
-        error: message,
-      };
+    if (!profileRes.data?.success || !profileRes.data?.user) {
+      throw new Error(
+        "Login succeeded, but the user profile could not be loaded."
+      );
     }
-  };
 
-  // Verify OTP and authenticate the user
-  const verifyOtp = async ({ email, otp }) => {
-    setAuthError(null);
+    // Step 3: Update global authentication state
+    setUser(profileRes.data.user);
 
-    try {
-      const res = await api.post("/auth/verify-otp", {
-        email: email.trim(),
-        otp: String(otp).trim(),
-      });
+    return {
+      success: true,
+      message: res.data?.message || "Login successful.",
+    };
+  } catch (err) {
+    const message =
+      err.response?.data?.message ||
+      err.message ||
+      "Login failed. Please check your credentials.";
 
-      if (!res.data?.success || !res.data?.user) {
-        const message =
-          res.data?.message ||
-          "OTP verification response was incomplete.";
+    setAuthError(message);
 
-        setAuthError(message);
+    return {
+      success: false,
+      error: message,
+    };
+  }
+};
 
-        return {
-          success: false,
-          error: message,
-        };
-      }
 
-      setUser(res.data.user);
-
-      return {
-        success: true,
-        user: res.data.user,
-        message:
-          res.data.message || "OTP verified successfully.",
-      };
-    } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        err.message ||
-        "OTP verification failed.";
-
-      setAuthError(message);
-
-      return {
-        success: false,
-        error: message,
-      };
-    }
-  };
 
   // Log out the current user
   const logout = async () => {
@@ -225,7 +190,6 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateProfile,
-    verifyOtp,
     checkAuthStatus,
     isAuthenticated: Boolean(user),
   };
